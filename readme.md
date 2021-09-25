@@ -9,7 +9,7 @@ __NOTE__: This game is a big Work in Progress. The main point was to give a goal
 The compilation (compiling game-engine and the game itself) should take less than 1 second.
 
 ```bash
-git submodule init && git submodule update
+git submodule update --init --recursive
 jai src/first.jai
 ./bin/hioy
 ```
