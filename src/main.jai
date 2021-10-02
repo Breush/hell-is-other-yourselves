@@ -7,6 +7,7 @@ Chamber :: #import "Chamber";
 
 #load "ground.jai";
 #load "player.jai";
+#load "recorder.jai";
 
 // @note We're using a global variable to store
 // the global state of the game. We could be passing
@@ -14,13 +15,17 @@ Chamber :: #import "Chamber";
 // overkill when a global variable would do the job just fine.
 game : struct {
     engine : *Sill.Engine(SillMeta);
+
+    player : *PlayerEntity;
+    playerClone : *PlayerCloneEntity;
 }
 
 main :: () {
     game.engine = Sill.create_engine(SillMeta);
 
-    player_init();
     ground_init();
+    player_init();
+    recorder_init();
 
     Sill.engine_run(game.engine);
 
