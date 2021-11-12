@@ -19,6 +19,7 @@ RecorderEntity :: struct {
 
 recorder_init :: () {
     recorder := SillMeta.create_recorder_entity(game.engine);
+    game.recorder = recorder;
     recorder.mode = .Idle;
 
     Sill.input_action_bind(*game.engine.input, "recorder.record", .R);
@@ -70,4 +71,8 @@ recorder_init :: () {
         }
 
     }, recorder);
+}
+
+recorder_cleanup :: () {
+    Basic.array_free(game.recorder.worldStates);
 }

@@ -18,6 +18,7 @@ game : struct {
 
     player : *PlayerEntity;
     playerClone : *PlayerCloneEntity;
+    recorder : *RecorderEntity;
 }
 
 main :: () {
@@ -29,9 +30,16 @@ main :: () {
 
     Sill.engine_run(game.engine);
 
+    // cleanup();
     // Basic.report_memory_leaks();
 }
 
 #scope_file
+
+cleanup :: () {
+    recorder_cleanup();
+
+    Sill.destroy_engine(game.engine);
+}
 
 #import "Math";

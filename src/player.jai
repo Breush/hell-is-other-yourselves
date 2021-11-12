@@ -21,6 +21,8 @@ PlayerCloneEntity :: struct {
     FOV_Y :: #run Chamber.to_radians(30);
 }
 
+playerPostProcessMaterial : *Magma.Material;
+
 player_init :: () {
     Crater.window_pointer_auto_centered(game.engine.window);
     Crater.window_pointer_hidden(game.engine.window);
@@ -40,6 +42,9 @@ player_init :: () {
 
     Sill.input_axis_bind(*game.engine.input, "player.look-horizontal", .MousePointerX);
     Sill.input_axis_bind(*game.engine.input, "player.look-vertical", .MousePointerY);
+
+    playerPostProcessShader := Magma.create_shader(game.engine.postProcessRenderer, "assets/shaders/post-processes/player");
+    playerPostProcessMaterial = Magma.create_material(playerPostProcessShader);
 
     player := SillMeta.create_player_entity(game.engine);
     game.player = player;
@@ -95,7 +100,7 @@ player_init :: () {
 
     Sill.transform_translate(*playerClone.transform, .{5, 0, 1.75});
     Sill.transform_rotate(*playerClone.transform, 0.95 * Math.PI, .{0, 0, 1});
-    Sill.transform_rotate(*playerClone.transform, -0.25 * Math.PI, .{0, 1, 0});
+    Sill.transform_rotate(*playerClone.transform, -0.05 * Math.PI, .{0, 1, 0});
 
     Sill.mesh_load_glb(*playerClone.mesh, "./assets/models/vr-headset.glb");
 
@@ -106,25 +111,46 @@ player_init :: () {
 
         // @note We expect the relativePosition to be in
         // the player clone view's space.
-        is_within_player_clone_fov :: (relativePosition : $T/interface Vector3) -> bool {
+        // The return value is a visibility value. The closer to 1, the more the player is visible,
+        // and 0 means that the player is not visible.
+        player_clone_visibility :: (relativePosition : $T/interface Vector3) -> float32 {
             longitudeAngle := Math.atan2(relativePosition.y, relativePosition.x);
             latitudeAngle := Math.atan2(relativePosition.z, Math.length(relativePosition.xy));
-            return Math.abs(longitudeAngle) < PlayerCloneEntity.FOV_X / 2. &&
-                   Math.abs(latitudeAngle) < PlayerCloneEntity.FOV_Y / 2.;
+            longitudeVisibility := (1. - Math.abs(longitudeAngle) / (PlayerCloneEntity.FOV_X / 2.));
+            latitudeVisibility := (1. - Math.abs(latitudeAngle) / (PlayerCloneEntity.FOV_Y / 2.));
+            if longitudeVisibility > 0. && latitudeVisibility > 0. {
+                longitudeVisibility = ifx longitudeVisibility < 0.5 then longitudeVisibility * 2 else 1;
+                latitudeVisibility = ifx latitudeVisibility < 0.5 then latitudeVisibility * 2 else 1;
+                value := longitudeVisibility * latitudeVisibility;
+                return longitudeVisibility * latitudeVisibility;
+            }
+            return 0.;
         };
 
+        power : float32 = 0.;
+
+        // @note We test the visibility on multiple points from the head to the ground.
+        // The number of points is this value below. This hard coded value allows for
+        // samples to be spaced by around 10cm each.
+        PLAYER_VISIBILITY_SAMPLES_COUNT :: 20;
         // @todo We put the feet at height 0, it may just be wrong.
-        playerHeadRelativeToClonePosition := playerCloneViewMatrix * Chamber.make_vec4(game.player.transform.translation, 1);
-        playerFeetRelativeToClonePosition := playerCloneViewMatrix * Chamber.make_vec4(game.player.transform.translation.xy, 0, 1);
-        if (is_within_player_clone_fov(playerHeadRelativeToClonePosition) ||
-            is_within_player_clone_fov(playerFeetRelativeToClonePosition)) {
-            Chamber.debug("Hey, you! ", playerHeadRelativeToClonePosition);
+        playerHeadPosition := game.player.transform.translation;
+        playerFeetPosition := Chamber.make_vec3(game.player.transform.translation.xy, 0);
+
+        for i : 0 .. PLAYER_VISIBILITY_SAMPLES_COUNT - 1 {
+            position := Chamber.mix(playerHeadPosition, playerFeetPosition, (cast(float32) i) / (PLAYER_VISIBILITY_SAMPLES_COUNT - 1));
+            relativeToClonePosition := playerCloneViewMatrix * Chamber.make_vec4(position, 1);
+            power = Chamber.max(power, player_clone_visibility(relativeToClonePosition));
+            if power == 1. {
+                break;
+            }
         }
 
-        // @fixme Make screen posteffect red when more and more seen
+        Magma.material_set(playerPostProcessMaterial, "power", power);
     }, playerClone);
 }
 
 #scope_file
 
 Math :: #import "Math";
+Magma :: #import "Magma";
