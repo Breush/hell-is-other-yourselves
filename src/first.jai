@@ -23,6 +23,15 @@ String :: #import "String";
     Basic.array_add(*import_path, ..options.import_path);
     options.import_path = import_path;
 
+    if options.os_target == .LINUX {
+        arguments: [..] string;
+        Basic.array_add(*arguments, "-rpath=$ORIGIN");
+        Basic.array_add(*arguments, Basic.tprint("-rpath=%../lava/bindings/Shaderc", #filepath));
+        Basic.array_add(*arguments, Basic.tprint("-rpath=%../lava/bindings/OpenXr", #filepath));
+        Basic.array_add(*arguments, Basic.tprint("-rpath=%../lava/bindings/Xcb", #filepath));
+        options.additional_linker_arguments = arguments;
+    }
+
     // Building our main program
     Compiler.set_build_options(options, workspace);
 
