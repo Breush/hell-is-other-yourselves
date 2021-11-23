@@ -24,8 +24,10 @@ PlayerCloneEntity :: struct {
 playerPostProcessMaterial : *Magma.Material;
 
 player_init :: () {
-    Crater.window_pointer_auto_centered(game.engine.window);
-    Crater.window_pointer_hidden(game.engine.window);
+    if !game.vr.enabled {
+        Crater.window_pointer_auto_centered(game.engine.window);
+        Crater.window_pointer_hidden(game.engine.window);
+    }
 
     // @note For Azerty keyboards, but that's temporary.
     // Anyway, the game is meant to be player in VR.
@@ -51,6 +53,11 @@ player_init :: () {
     Sill.transform_translate(*player.transform, .{0, 0, 1.75});
 
     Sill.behavior_on_update(*player.behavior, xx (dt : float64, player : *PlayerEntity) {
+        if game.vr.enabled {
+            Sill.transform_set(*player.transform, game.engine.vrTarget.headInfo.transform);
+            return;
+        }
+
         impulse : Chamber.vec3;
         if Sill.input_action_active(*game.engine.input, "player.forward") {
             impulse.std += .{3, 0, 0}; // 3 meters per second

@@ -13,3 +13,14 @@ git submodule update --init --recursive
 jai src/first.jai
 ./bin/hioy
 ```
+
+## Develop without a VR HMD (using the Monado runtime)
+
+- Follow `remote` section from [here](https://monado.freedesktop.org/developing-with-monado.html).
+- Run the program with the monado runtime forced.
+
+```bash
+monado-service&
+monado-gui # connect with remote
+XR_RUNTIME_JSON=/usr/share/openxr/1/openxr_monado.json ./bin/hioy
+```

@@ -2,6 +2,7 @@
 
 Basic :: #import "Basic";
 Sill :: #import "Sill";
+Magma :: #import "Magma";
 Crater :: #import "Crater";
 Chamber :: #import "Chamber";
 
@@ -15,6 +16,7 @@ Chamber :: #import "Chamber";
 // overkill when a global variable would do the job just fine.
 game : struct {
     engine : *Sill.Engine(SillMeta);
+    vr : *Magma.Vr;
 
     player : *PlayerEntity;
     playerClone : *PlayerCloneEntity;
@@ -23,6 +25,7 @@ game : struct {
 
 main :: () {
     game.engine = Sill.create_engine(SillMeta);
+    game.vr = *game.engine.renderEngine.vr;
 
     ground_init();
     player_init();
