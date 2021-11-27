@@ -29,6 +29,8 @@ player_init :: () {
         Crater.window_pointer_hidden(game.engine.window);
     }
 
+    Sill.input_action_bind(*game.engine.input, "player.select", .RightHandSelect);
+
     // @note For Azerty keyboards, but that's temporary.
     // Anyway, the game is meant to be player in VR.
     Sill.input_action_bind(*game.engine.input, "player.forward", .Z);
@@ -55,6 +57,10 @@ player_init :: () {
     Sill.behavior_on_update(*player.behavior, xx (dt : float64, player : *PlayerEntity) {
         if game.vr.enabled {
             Sill.transform_set(*player.transform, game.engine.vrTarget.headInfo.transform);
+
+            if Sill.input_action_just_activated(*game.engine.input, "player.select") {
+                Chamber.debug("Player select.");
+            }
             return;
         }
 

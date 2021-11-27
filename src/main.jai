@@ -24,6 +24,8 @@ game : struct {
 }
 
 main :: () {
+    Chamber.init_logger();
+
     game.engine = Sill.create_engine(SillMeta);
     game.vr = *game.engine.renderEngine.vr;
 
