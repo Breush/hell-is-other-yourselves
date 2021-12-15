@@ -25,8 +25,9 @@ game : struct {
 
 main :: () {
     Chamber.init_logger();
+    context.log_level = .VERBOSE;
 
-    game.engine = Sill.create_engine(SillMeta);
+    game.engine = Sill.create_engine(SillMeta, rayTracing = true);
     game.vr = *game.engine.renderEngine.vr;
 
     ground_init();
@@ -36,6 +37,7 @@ main :: () {
     Sill.engine_run(game.engine);
 
     // cleanup();
+    // Chamber.cleanup_logger();
     // Basic.report_memory_leaks();
 }
 
