@@ -111,11 +111,11 @@ player_init :: () {
     playerClone := SillMeta.create_player_clone_entity(game.engine);
     game.playerClone = playerClone;
 
-    Sill.transform_translate(*playerClone.transform, .{5, 0, 1.75});
-    Sill.transform_rotate(*playerClone.transform, 0.95 * Math.PI, .{0, 0, 1});
-    Sill.transform_rotate(*playerClone.transform, -0.05 * Math.PI, .{0, 1, 0});
+    // Sill.transform_translate(*playerClone.transform, .{5, 0, 0.6});
+    // Sill.transform_rotate(*playerClone.transform, 0.95 * Math.PI, .{0, 0, 1});
+    // Sill.transform_rotate(*playerClone.transform, -0.05 * Math.PI, .{0, 1, 0});
 
-    Sill.mesh_load_glb(*playerClone.mesh, "./assets/models/vr-headset.glb");
+    Sill.mesh_load_glb(*playerClone.mesh, "./assets/models/sponza.glb");
 
     Sill.behavior_on_update(*playerClone.behavior, xx (dt : float64, playerClone : *PlayerCloneEntity) {
         // Moving the player in the clone's view space
@@ -159,7 +159,7 @@ player_init :: () {
             }
         }
 
-        Magma.material_set(playerPostProcessMaterial, "power", power);
+        // Magma.material_set(playerPostProcessMaterial, "power", power);
     }, playerClone);
 }
 
