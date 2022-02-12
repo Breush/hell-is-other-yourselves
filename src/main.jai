@@ -27,7 +27,7 @@ main :: () {
     Chamber.init_logger();
     context.log_level = .VERBOSE;
 
-    game.engine = Sill.create_engine(SillMeta, rayTracing = true);
+    game.engine = Sill.create_engine(SillMeta, postProcessing = true, rayTracing = true);
     game.vr = *game.engine.renderEngine.vr;
 
     ground_init();
