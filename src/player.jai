@@ -47,7 +47,7 @@ player_init :: () {
     Sill.input_axis_bind(*game.engine.input, "player.look-horizontal", .MousePointerX);
     Sill.input_axis_bind(*game.engine.input, "player.look-vertical", .MousePointerY);
 
-    playerPostProcessShader := Magma.create_shader(game.engine.postProcessRenderer, "assets/shaders/post-processes/player");
+    playerPostProcessShader := Magma.create_shader(*game.engine.postProcessRenderer.renderer, "assets/shaders/post-processes/player");
     playerPostProcessMaterial = Magma.create_material(playerPostProcessShader);
 
     player := SillMeta.create_player_entity(game.engine);
@@ -166,4 +166,3 @@ player_init :: () {
 #scope_file
 
 Math :: #import "Math";
-Magma :: #import "Magma";

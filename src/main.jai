@@ -1,8 +1,8 @@
 // #import "Basic"()(MEMORY_DEBUGGER=true);
 
 Basic :: #import "Basic";
-Sill :: #import "Sill";
-Magma :: #import "Magma";
+Sill :: #import "Sill" (VR_ENABLED=true);
+Magma :: Sill.Magma;
 Crater :: #import "Crater";
 Chamber :: #import "Chamber";
 
